@@ -1,0 +1,80 @@
+{% extends 'guest/base.html' %}
+
+{% block design %}
+    .s_book {
+        padding: 30px;
+        text-align: center;
+        color: red;
+    }
+
+    .table .row.header {
+        font-weight: 900;
+        color: #ffffff;
+        background: #2980b9;
+    }
+
+    .table .cell {
+        padding: 6px 12px;
+    }
+
+    .table .row {
+        background: #f6f6f6;
+    }
+
+    .table .row:nth-of-type(odd) {
+        background: #e9e9e9;
+    }
+{% endblock design %}
+
+{% block content %}
+    {% if bookings.count == 0 %}
+        <center><h4 class="s_book"> No Bookings Done!!</h4></center>
+    {% else %}
+        <center>
+            <h3 class="s_book">ALL Successful Bookings of {{ guest.first_name }} {{ guest.last_name }} ({{ guest.user.username }})</h3>
+        </center>
+
+        <div class="wrapper" style="padding-top: 0px;">
+            <div class="table">
+                <div class="row header">
+                    <div class="cell">ID</div>
+                    <div class="cell">Room No</div>
+                    <div class="cell">CheckIn</div>
+                    <div class="cell">CheckOut</div>
+                    <div class="cell">Status</div>
+                    <div class="cell">Cancel</div>
+                </div>
+                {% for booking in bookings %}
+                    <div class="row">
+                        <div class="cell" data-title="Number">{{ forloop.counter }}</div>
+                        <div class="cell" data-title="Number">{{ booking.room.no }}</div>
+                        <div class="cell" data-title="Date">{{ booking.checkIn }}</div>
+                        <div class="cell" data-title="Date">{{ booking.checkOut }}</div>
+                        <div class="cell" style="color: {% if booking.accept %} green {% elif booking.reject %} red {% else %} blue {% endif %}" data-title="status">
+                            {% if booking.accept %}
+                                Accepted
+                            {% elif booking.reject %}
+                                Rejected
+                            {% else %}
+                                Pending
+                            {% endif %}
+                        </div>
+                        <div class="cell">
+                            {% if booking.accept or not booking.reject %}
+                                <a class="btn btn-danger" href="{% url 'guest:cancel' booking.booking_id %}"> Cancel Booking </a>
+                            {% else %}
+                                Already Rejected
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <br>
+    {% endif %}
+{% endblock content %}
+
+{% block more_links %}
+    <a href="{% url 'guest:home' %}">Book A Room!</a>
+    <a href="{% url 'guest:logout' %}">Logout</a>
+{% endblock more_links %}
